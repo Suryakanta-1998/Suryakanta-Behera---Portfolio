@@ -28,8 +28,9 @@ a{color:inherit}
 .lead{max-width:62ch;margin:18px 0 22px}
 .links{display:flex;flex-wrap:wrap;gap:10px}
 .links a{padding:8px 16px;border:1.5px solid var(--ink);border-radius:6px;text-decoration:none;font-weight:600}
-.links a:first-child{background:var(--ink);color:var(--bg)}
-.links a:focus-visible,.links a:hover{outline:3px solid var(--pass);outline-offset:2px}
+.links a:first-child,.listen{background:var(--ink);color:var(--bg)}
+.listen{padding:8px 16px;border:1.5px solid var(--ink);border-radius:6px;font:inherit;font-weight:600;cursor:pointer}
+.links a:focus-visible,.links a:hover,.listen:focus-visible,.listen:hover{outline:3px solid var(--pass);outline-offset:2px}
 .run{margin-top:36px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .run-h{display:flex;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);font-weight:600;font-size:.95rem}
 .run-h span:last-child{color:var(--pass)}
@@ -47,8 +48,12 @@ li{margin-bottom:7px}
 .skill h3{font-size:1rem;margin-bottom:6px}
 .skill p{margin:0;color:var(--mute);font-size:.95rem}
 .skill strong{color:var(--ink);font-weight:600}
+.badge-item{display:flex;align-items:center;gap:18px;max-width:460px;margin:22px 0 0;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.badge-item img{display:block;width:112px;aspect-ratio:1;object-fit:contain;flex:none}
+.badge-item figcaption{color:var(--mute);font-size:.95rem}
+.badge-item strong{display:block;margin-bottom:4px;color:var(--ink);font-size:1.05rem}
 footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:var(--mute);font-size:.92rem}
-@media (max-width:520px){main{padding-top:36px}.intro{gap:16px}.portrait{flex-basis:88px;width:88px;border-width:2px;font-size:1.4rem}.row{grid-template-columns:1fr}.row small{grid-column:1}}
+@media (max-width:520px){main{padding-top:36px}.intro{gap:16px}.portrait{flex-basis:88px;width:88px;border-width:2px;font-size:1.4rem}.row{grid-template-columns:1fr}.row small{grid-column:1}.badge-item{gap:12px;padding:10px}.badge-item img{width:88px}}
 </style>
 </head>
 <body>
@@ -62,6 +67,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:v
 <div class="links">
 <a href="mailto:suryakanta1998@gmail.com">Email me</a>
 <a href="https://linkedin.com/in/suryakanta-behera">LinkedIn</a>
+<button class="listen" id="listen-button" type="button">Listen to introduction</button>
 </div>
 </div>
 <div class="portrait" aria-label="Profile picture">
@@ -148,6 +154,10 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:v
 <li>Rise Insta Award from Infosys Limited in 2022, 2023, 2024 and 2026 for exceptional performance.</li>
 <li>Commended by the client manager for consistently high-quality results and for managing complex tasks well.</li>
 </ul>
+<figure class="badge-item">
+<img src="DynatraceEssentialsbadge.jpg" alt="Dynatrace Verified Essentials badge">
+<figcaption><strong>Dynatrace Essentials</strong>Foundational knowledge of application performance monitoring and observability.</figcaption>
+</figure>
 </section>
 
 <section>
@@ -157,5 +167,39 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:v
 
 <footer>Open to SDET and QA automation roles. Reach me at <a href="mailto:suryakanta1998@gmail.com">suryakanta1998@gmail.com</a> or on <a href="https://linkedin.com/in/suryakanta-behera">LinkedIn</a>.</footer>
 </main>
+<script>
+const listenButton = document.getElementById("listen-button");
+
+if ("speechSynthesis" in window && "SpeechSynthesisUtterance" in window) {
+	listenButton.addEventListener("click", () => {
+		if (window.speechSynthesis.speaking) {
+			window.speechSynthesis.cancel();
+			listenButton.textContent = "Listen to introduction";
+			listenButton.setAttribute("aria-pressed", "false");
+			return;
+		}
+
+		const intro = document.querySelector(".intro-copy");
+		const spokenText = [
+			intro.querySelector("h1").textContent,
+			intro.querySelector(".role").textContent,
+			intro.querySelector(".lead").textContent
+		].join(". ");
+		const utterance = new SpeechSynthesisUtterance(spokenText);
+		utterance.lang = "en-IN";
+		utterance.onend = () => {
+			listenButton.textContent = "Listen to introduction";
+			listenButton.setAttribute("aria-pressed", "false");
+		};
+		utterance.onerror = utterance.onend;
+
+		listenButton.textContent = "Stop listening";
+		listenButton.setAttribute("aria-pressed", "true");
+		window.speechSynthesis.speak(utterance);
+	});
+} else {
+	listenButton.hidden = true;
+}
+</script>
 </body>
 </html>
